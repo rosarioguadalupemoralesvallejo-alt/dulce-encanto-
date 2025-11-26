@@ -28,7 +28,7 @@
       <input type="text" name="producto" placeholder="Producto que deseas" required>
       <input type="number" name="cantidad" placeholder="Cantidad" required>
 
-      <!-- Ubicación automática del cliente enviada solo a Formspree -->
+      <!-- Ubicación automática del cliente enviada a Formspree -->
       <input type="hidden" id="ubicacionCliente" name="ubicacionCliente">
 
       <input type="text" name="lugarEntrega" placeholder="Lugar donde deseas recibir el pedido" required>
@@ -77,13 +77,20 @@
       });
     }
 
-    // Enviar solo a Formspree sin WhatsApp
+    // Enviar a Formspree y luego mensaje a WhatsApp sin ubicación
     const form = document.querySelector("form");
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const data = new FormData(form);
+      const nombre = data.get("nombre");
+      const producto = data.get("producto");
+      const cantidad = data.get("cantidad");
+      const lugarEntrega = data.get("lugarEntrega");
+      const modoPago = data.get("modoPago");
+      const detalles = data.get("detalles") || "Sin detalles";
 
+      // Enviar datos completos, incluyendo ubicación, a Formspree
       const response = await fetch(form.action, {
         method: "POST",
         body: data,
@@ -91,7 +98,14 @@
       });
 
       if (response.ok) {
-        alert("✅ Pedido enviado correctamente. Te contactaremos pronto.");
+        // Crear mensaje para WhatsApp SIN ubicación del cliente
+        const mensaje = `🍰 *Nuevo pedido DULCE ENCANTO*\n\n👤 Nombre: ${nombre}\n📦 Producto: ${producto}\n🔢 Cantidad: ${cantidad}\n🏠 Lugar de entrega: ${lugarEntrega}\n💰 Modo de pago: ${modoPago}\n📝 Detalles: ${detalles}`;
+
+        const telefono = "59173466117"; // Número de WhatsApp
+        const url = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
+        window.open(url, "_blank");
+
+        alert("✅ Pedido enviado correctamente. Te escribiremos por WhatsApp.");
         form.reset();
       } else {
         alert("❌ Error al enviar el pedido. Intenta nuevamente.");
@@ -100,3 +114,4 @@
   </script>
 </body>
 </html>
+
