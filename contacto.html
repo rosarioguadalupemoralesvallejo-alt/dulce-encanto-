@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">CULCE ENCANTO</div>
+    <div class="logo">DULCE ENCANTO</div>
     <nav>
       <ul>
         <li><a href="index.html">Inicio</a></li>
@@ -28,7 +28,7 @@
       <input type="text" name="producto" placeholder="Producto que deseas" required>
       <input type="number" name="cantidad" placeholder="Cantidad" required>
 
-      <!-- Ubicación automática del cliente (solo para Formspree, oculto) -->
+      <!-- Ubicación automática del cliente enviada solo a Formspree -->
       <input type="hidden" id="ubicacionCliente" name="ubicacionCliente">
 
       <input type="text" name="lugarEntrega" placeholder="Lugar donde deseas recibir el pedido" required>
@@ -46,7 +46,7 @@
     </form>
 
     <br>
-    <h3>📍 Nuestra Pasteleria Dulce Encantose encuentra aquí:</h3>
+    <h3>📍 Nuestra Pastelería Dulce Encanto se encuentra aquí:</h3>
     <iframe
       width="100%"
       height="300"
@@ -67,7 +67,7 @@
       document.getElementById("productoSeleccionado").textContent = "🛒 Estás comprando: " + producto;
     }
 
-    // Detectar ubicación del cliente automáticamente (solo para enviar a Formspree)
+    // Detectar ubicación del cliente automáticamente y enviarla a Formspree
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const lat = position.coords.latitude;
@@ -77,34 +77,21 @@
       });
     }
 
-    // Enviar a Formspree y luego WhatsApp sin incluir la ubicación
+    // Enviar solo a Formspree sin WhatsApp
     const form = document.querySelector("form");
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const data = new FormData(form);
-      const nombre = data.get("nombre");
-      const producto = data.get("producto");
-      const cantidad = data.get("cantidad");
-      const lugarEntrega = data.get("lugarEntrega");
-      const modoPago = data.get("modoPago");
-      const detalles = data.get("detalles");
 
-      // Enviar a Formspree (con la ubicación incluida)
       const response = await fetch(form.action, {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" }
       });
 
-      // Si Formspree responde OK, abrir WhatsApp sin incluir la ubicación
       if (response.ok) {
-        const mensaje = `🍰 *Nuevo pedido CHARO*\n\n👤 Nombre: ${nombre}\n📦 Producto: ${producto}\n🔢 Cantidad: ${cantidad}\n🏠 Lugar de entrega: ${lugarEntrega}\n💰 Modo de pago: ${modoPago}\n📝 Detalles: ${detalles}\n\n📍 Tienda CHARO: https://www.google.com/maps?q=-19.49235,-64.47436`;
-        const telefono = "59173466117"; // Tu número con prefijo
-        const url = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
-        window.open(url, "_blank");
-
-        alert("✅ Pedido enviado correctamente. Te contactaremos por WhatsApp.");
+        alert("✅ Pedido enviado correctamente. Te contactaremos pronto.");
         form.reset();
       } else {
         alert("❌ Error al enviar el pedido. Intenta nuevamente.");
